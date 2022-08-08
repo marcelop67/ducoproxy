@@ -38,6 +38,7 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
 
     session = requests.Session()
     session.headers.update({'Accept': 'application/json', 'Content-Type': 'application/json'})
+    logtime = datetime.now(tz=timezone.utc)
     
     try:
         url = f"{DUCO_ROOT_ENDPOINT}/board_info"
@@ -60,7 +61,7 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
             node = response.json()
 
             if node['devtype'] == 'BOX':
-                result['box']['logtime'] = datetime.now(tz=timezone.utc)
+                result['box']['logtime'] = logtime
                 result['box']['mode'] = node['mode']
                 result['box']['state'] = node['state']
                 result['box']['level'] = node['trgt']
@@ -83,7 +84,7 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
             
             elif node['devtype'] == 'UCCO2' or node['devtype'] == 'UCRH' or (node['devtype'] == 'UC' and node['netw'] == 'VIRT'):
                 sensor = {}
-                sensor['logtime'] = datetime.now(tz=timezone.utc)
+                sensor['logtime'] = logtime
                 sensor['nid'] = n
                 sensor['devtype'] = node['devtype']
                 sensor['location'] = node['location']
