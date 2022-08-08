@@ -1,6 +1,6 @@
 version: "3"
 services:
-  chkport:
+  ducoproxy:
     env_file:
       - .env
     image: marcelop67/ducoproxy:latest
