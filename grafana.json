@@ -1,0 +1,1490 @@
+{
+    "__inputs": [
+      {
+        "name": "DS_MYSQL",
+        "label": "MySQL",
+        "description": "",
+        "type": "datasource",
+        "pluginId": "mysql",
+        "pluginName": "MySQL"
+      }
+    ],
+    "__elements": [],
+    "__requires": [
+      {
+        "type": "panel",
+        "id": "gauge",
+        "name": "Gauge",
+        "version": ""
+      },
+      {
+        "type": "grafana",
+        "id": "grafana",
+        "name": "Grafana",
+        "version": "9.0.0"
+      },
+      {
+        "type": "datasource",
+        "id": "mysql",
+        "name": "MySQL",
+        "version": "1.0.0"
+      },
+      {
+        "type": "panel",
+        "id": "stat",
+        "name": "Stat",
+        "version": ""
+      },
+      {
+        "type": "panel",
+        "id": "table",
+        "name": "Table",
+        "version": ""
+      },
+      {
+        "type": "panel",
+        "id": "timeseries",
+        "name": "Time series",
+        "version": ""
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "iteration": 1659984273597,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "datasource": {
+          "type": "mysql",
+          "uid": "4lq2KRLnz"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 53,
+        "panels": [],
+        "title": "Current",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "super-light-blue",
+                  "value": null
+                },
+                {
+                  "color": "light-blue",
+                  "value": 50.0001
+                },
+                {
+                  "color": "semi-dark-blue",
+                  "value": 75.0001
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 0,
+          "y": 1
+        },
+        "id": 19,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": false,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  level\nFROM box\nWHERE\n  $__timeFilter(logtime)\nORDER BY logtime",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "level"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "type": "gauge"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-blue",
+                  "value": null
+                },
+                {
+                  "color": "semi-dark-green",
+                  "value": 19
+                },
+                {
+                  "color": "dark-orange",
+                  "value": 23
+                },
+                {
+                  "color": "dark-red",
+                  "value": 25
+                }
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 3,
+          "y": 1
+        },
+        "id": 41,
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "vertical",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "value_and_name"
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "location",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  location AS metric,\n  temp\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND NOT isnull(temp)\nORDER BY time, metric",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "temp"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "float",
+                "name": "",
+                "params": [
+                  "temp",
+                  "!=",
+                  "'0'"
+                ],
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "transparent": true,
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed"
+            },
+            "custom": {
+              "align": "center",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 2,
+          "w": 3,
+          "x": 0,
+          "y": 6
+        },
+        "id": 28,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": false
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT CONCAT('Ventilation Level (', has_control, '/', state, ')') FROM box ORDER BY logtime DESC LIMIT 1;",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "level"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "semi-dark-green",
+                  "value": 1
+                },
+                {
+                  "color": "dark-orange",
+                  "value": 800
+                },
+                {
+                  "color": "dark-red",
+                  "value": 1200
+                }
+              ]
+            },
+            "unit": "ppm"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "box_logid"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Temperature =&nbsp;"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 3,
+          "y": 6
+        },
+        "id": 40,
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "vertical",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "value"
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "location",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  location AS metric, \n  co2\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND temp != 0\nORDER BY logtime, metric",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "co2"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "float",
+                "name": "",
+                "params": [
+                  "co2",
+                  "!=",
+                  "'0'"
+                ],
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-red",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "watt"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 0,
+          "y": 8
+        },
+        "id": 45,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": false,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  power\nFROM box\nWHERE\n  $__timeFilter(logtime)\nORDER BY logtime",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "power"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "type": "gauge"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "semi-dark-green",
+                  "value": 1
+                },
+                {
+                  "color": "dark-orange",
+                  "value": 65
+                }
+              ]
+            },
+            "unit": "humidity"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 3,
+          "y": 11
+        },
+        "id": 44,
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "vertical",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "value"
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "location",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  location AS metric, \n  rh\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND temp != 0\nORDER BY logtime, metric",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "co2"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "float",
+                "name": "",
+                "params": [
+                  "co2",
+                  "!=",
+                  "'0'"
+                ],
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed"
+            },
+            "custom": {
+              "align": "center",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 2,
+          "w": 3,
+          "x": 0,
+          "y": 13
+        },
+        "id": 46,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": false
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT 'Power Consumption' FROM box ORDER BY logtime DESC LIMIT 1;",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "level"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-orange",
+                  "value": null
+                },
+                {
+                  "color": "semi-dark-green",
+                  "value": 15
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 0,
+          "y": 15
+        },
+        "id": 48,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": false,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  remainfilter_percent\nFROM box\nWHERE\n  $__timeFilter(logtime)\nORDER BY logtime",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "remainfilter_percent"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "type": "gauge"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed"
+            },
+            "custom": {
+              "align": "center",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-green"
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 2,
+          "w": 3,
+          "x": 0,
+          "y": 20
+        },
+        "id": 47,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": false
+        },
+        "pluginVersion": "9.0.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT CONCAT('Filter Remaining (', remainfilter_days, ' days)') FROM box ORDER BY logtime DESC LIMIT 1;",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "level"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "datasource": {
+          "type": "mysql",
+          "uid": "4lq2KRLnz"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 22
+        },
+        "id": 55,
+        "panels": [],
+        "title": "History",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "fixedColor": "light-blue",
+              "mode": "fixed"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "left",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "smooth",
+              "lineStyle": {
+                "fill": "solid"
+              },
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "max": 26,
+            "min": 16,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 15,
+          "x": 0,
+          "y": 23
+        },
+        "id": 50,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "hide": false,
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  temp AS \"Temperature\"\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND\n  location = '$Sensor'\nORDER BY logtime",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "co2"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "varchar",
+                "name": "",
+                "params": [
+                  "location",
+                  "=",
+                  "'$query0'"
+                ],
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "fixedColor": "light-blue",
+              "mode": "fixed"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "left",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "smooth",
+              "lineStyle": {
+                "fill": "solid"
+              },
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "max": 1400,
+            "min": 400,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            },
+            "unit": "ppm"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Humidity"
+              },
+              "properties": [
+                {
+                  "id": "custom.axisPlacement",
+                  "value": "right"
+                },
+                {
+                  "id": "min",
+                  "value": 0
+                },
+                {
+                  "id": "max",
+                  "value": 100
+                },
+                {
+                  "id": "unit",
+                  "value": "humidity"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "light-green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 15,
+          "x": 0,
+          "y": 30
+        },
+        "id": 56,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "hide": false,
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  co2 AS \"CO2\"\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND\n  location = '$Sensor'\nORDER BY logtime",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "co2"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "varchar",
+                "name": "",
+                "params": [
+                  "location",
+                  "=",
+                  "'$query0'"
+                ],
+                "type": "expression"
+              }
+            ]
+          },
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "hide": false,
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  rh AS \"Humidity\"\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND\n  location = '$Sensor'\nORDER BY logtime",
+            "refId": "B",
+            "select": [
+              [
+                {
+                  "params": [
+                    "box_logid"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "fixedColor": "light-blue",
+              "mode": "fixed"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "left",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "smooth",
+              "lineStyle": {
+                "fill": "solid"
+              },
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Sensor Target"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "light-green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 15,
+          "x": 0,
+          "y": 37
+        },
+        "id": 51,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "hide": false,
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  level AS \"Box Level\"\nFROM box\nWHERE\n  $__timeFilter(logtime)\nORDER BY logtime",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "co2"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "sensors",
+            "timeColumn": "logtime",
+            "timeColumnType": "datetime",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "varchar",
+                "name": "",
+                "params": [
+                  "location",
+                  "=",
+                  "'$query0'"
+                ],
+                "type": "expression"
+              }
+            ]
+          },
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "time_series",
+            "group": [],
+            "hide": false,
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  logtime AS \"time\",\n  target AS \"Sensor Target\"\nFROM sensors\nWHERE\n  $__timeFilter(logtime) AND\n  location = '$Sensor'\nORDER BY logtime",
+            "refId": "B",
+            "select": [
+              [
+                {
+                  "params": [
+                    "box_logid"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "box",
+            "timeColumn": "logtime",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "1m",
+    "schemaVersion": 36,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {},
+          "datasource": {
+            "type": "mysql",
+            "uid": "${DS_MYSQL}"
+          },
+          "definition": "SELECT location FROM sensors GROUP BY location ORDER BY location ASC",
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "Sensor",
+          "options": [],
+          "query": "SELECT location FROM sensors GROUP BY location ORDER BY location ASC",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-3h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h"
+      ]
+    },
+    "timezone": "",
+    "title": "Duco Ventilation",
+    "uid": "ducolog",
+    "version": 4,
+    "weekStart": ""
+  }
+  
