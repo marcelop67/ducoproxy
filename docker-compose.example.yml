@@ -1,0 +1,13 @@
+version: "3"
+services:
+  chkport:
+    env_file:
+      - .env
+    image: marcelop67/ducoproxy:latest
+    container_name: ducoproxy
+    network_mode: bridge
+    ports:
+      - 8521:80
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true    
