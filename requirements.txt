@@ -1,4 +1,4 @@
 requests>=2.22.0
 environs>=9.5.0
-mysql.connector>=8.0.29
+mysql-connector-python>=8.0.29
 

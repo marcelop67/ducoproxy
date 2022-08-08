@@ -1,3 +1,4 @@
+from typing import Tuple
 import requests
 import urllib.parse
 import mysql.connector
@@ -13,7 +14,7 @@ MYSQL_DB = CONFIG.str('MYSQL_DB', 'ducologger')
 MYSQL_USER = CONFIG.str('MYSQL_USER')
 MYSQL_PASSWORD = CONFIG.str('MYSQL_PASSWORD')
 
-def get(log_output: bool = False) -> tuple[dict, int]:
+def get(log_output: bool = False) -> Tuple[dict, int]:
     result = {
         'box': {
             'logtime': None,
@@ -128,12 +129,6 @@ def get(log_output: bool = False) -> tuple[dict, int]:
                 sql = f"INSERT INTO sensors ({', '.join(result['sensors'][n].keys())}) VALUES ({', '.join(['%s'] * len(result['sensors'][n].values()))})"
                 c.execute(sql, list(result['sensors'][n].values()))
                 result['sensors'][n]['logid'] = c.lastrowid
-
-#            for sensor in result['sensors']:
-#                sensor['box_logid'] = result['box']['rowid']
-#                sql = f"INSERT INTO sensors ({', '.join(sensor.keys())}) VALUES ({', '.join(['%s'] * len(sensor.values()))})"
-#                c.execute(sql, list(sensor.values()))
-#                result['box']['rowid'] = c.lastrowid
 
             db.commit()
             db.close()
