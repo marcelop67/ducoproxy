@@ -1,4 +1,3 @@
-from typing import Tuple
 import requests
 import urllib.parse
 import mysql.connector
@@ -14,8 +13,8 @@ MYSQL_DB = CONFIG.str('MYSQL_DB', 'ducologger')
 MYSQL_USER = CONFIG.str('MYSQL_USER')
 MYSQL_PASSWORD = CONFIG.str('MYSQL_PASSWORD')
 
-def get(log_output: bool = False) -> Tuple[dict, int]:
-    result = {
+def getinfo():
+    info = {
         'box': {
             'logtime': None,
             'mode': None, 
@@ -45,7 +44,7 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
         response = session.get(url, timeout=10)
         response.raise_for_status()
         board = response.json()
-        result['box']['uptime'] = board['uptime']
+        info['box']['uptime'] = board['uptime']
         
         url = f"{DUCO_ROOT_ENDPOINT}/nodelist')"
         response = session.get(url, timeout=10)
@@ -61,26 +60,26 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
             node = response.json()
 
             if node['devtype'] == 'BOX':
-                result['box']['logtime'] = logtime
-                result['box']['mode'] = node['mode']
-                result['box']['state'] = node['state']
-                result['box']['level'] = node['trgt']
-                result['box']['cntdwn'] = node['cntdwn']
+                info['box']['logtime'] = logtime
+                info['box']['mode'] = node['mode']
+                info['box']['state'] = node['state']
+                info['box']['level'] = node['trgt']
+                info['box']['cntdwn'] = node['cntdwn']
                   
                 url = f"{DUCO_ROOT_ENDPOINT}/boxinfoget')"
                 response = session.get(url, timeout=10)
                 response.raise_for_status()     
                 box = response.json()
 
-                result['box']['temp_oda'] = box['EnergyInfo']['TempODA']/10 # Outdoor air. Supply air from outdoors to the unit
-                result['box']['temp_sup'] = box['EnergyInfo']['TempSUP']/10 # Supply air. Supply air from unit to house
-                result['box']['temp_eta'] = box['EnergyInfo']['TempETA']/10 # Extract air. Supply air from the house to the unit
-                result['box']['temp_eha'] = box['EnergyInfo']['TempEHA']/10 # Exhaust air. Exhaust air from the unit to outdoors        
-                result['box']['remainfilter_days'] = box['EnergyInfo']['FilterRemainingTime']
-                result['box']['remainfilter_percent'] = round(box['EnergyInfo']['FilterRemainingTime']/(365/2)*100)
-                result['box']['bypass'] = box['EnergyInfo']['BypassStatus']
-                result['box']['frost'] = box['EnergyInfo']['FrostProtState']
-                result['box']['power'] = (box['EnergyFan']['SupplyFanPwmLevel'] + box['EnergyFan']['ExhaustFanPwmLevel'])/1000
+                info['box']['temp_oda'] = box['EnergyInfo']['TempODA']/10 # Outdoor air. Supply air from outdoors to the unit
+                info['box']['temp_sup'] = box['EnergyInfo']['TempSUP']/10 # Supply air. Supply air from unit to house
+                info['box']['temp_eta'] = box['EnergyInfo']['TempETA']/10 # Extract air. Supply air from the house to the unit
+                info['box']['temp_eha'] = box['EnergyInfo']['TempEHA']/10 # Exhaust air. Exhaust air from the unit to outdoors        
+                info['box']['remainfilter_days'] = box['EnergyInfo']['FilterRemainingTime']
+                info['box']['remainfilter_percent'] = round(box['EnergyInfo']['FilterRemainingTime']/(365/2)*100)
+                info['box']['bypass'] = box['EnergyInfo']['BypassStatus']
+                info['box']['frost'] = box['EnergyInfo']['FrostProtState']
+                info['box']['power'] = (box['EnergyFan']['SupplyFanPwmLevel'] + box['EnergyFan']['ExhaustFanPwmLevel'])/1000
             
             elif node['devtype'] == 'UCCO2' or node['devtype'] == 'UCRH' or (node['devtype'] == 'UC' and node['netw'] == 'VIRT'):
                 sensor = {}
@@ -103,36 +102,59 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
                     sensor['devtype'] = 'PROGRM'
                     sensor['location'] = 'Program'
 
-                result['sensors'].append(sensor)
+                info['sensors'].append(sensor)
                 if sensor['target'] > target:
                     location = sensor['location']
                     target = sensor['target']
 
-        result['box']['has_control'] = 'Manual' if result['box']['mode'] == 'MANU' else location
+        info['box']['has_control'] = 'Manual' if info['box']['mode'] == 'MANU' else location
+    except Exception as err: 
+        info = {'error': {}}
+        status_code = requests.codes.internal_server_error
+        info['error']['code'] = status_code
+        info['error']['reason'] = err.__class__.__name__
+        info['error']['message'] = str(err)
+    else:
+        status_code = requests.codes.ok
+    finally:
+        session.close()
+ 
+    return info, status_code
 
-        if log_output:
-            db = mysql.connector.connect(
-                host=MYSQL_HOST,
-                port=MYSQL_PORT,
-                db=MYSQL_DB,
-                user=MYSQL_USER,
-                password=MYSQL_PASSWORD
-            )
-            c = db.cursor()
-            
-            box = result['box']
-            sql = f"INSERT INTO box ({', '.join(box.keys())}) VALUES ({', '.join(['%s'] * len(box.values()))})"
-            c.execute(sql, list(box.values()))
-            result['box']['logid'] = c.lastrowid
+def writelog():
+    info, status_code = getinfo()
+    if status_code != requests.codes.ok:
+        return info, status_code
 
-            for n in range(len(result['sensors'])):
-                result['sensors'][n]['box_logid'] = result['box']['logid']
-                sql = f"INSERT INTO sensors ({', '.join(result['sensors'][n].keys())}) VALUES ({', '.join(['%s'] * len(result['sensors'][n].values()))})"
-                c.execute(sql, list(result['sensors'][n].values()))
-                result['sensors'][n]['logid'] = c.lastrowid
+    result = {
+        'timestamp': info['box']['logtime'],
+        'box_logid': None,
+        'sensor_logids': []
+    }
 
-            db.commit()
-            db.close()
+    try:
+        db = mysql.connector.connect(
+            host=MYSQL_HOST,
+            port=MYSQL_PORT,
+            db=MYSQL_DB,
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD
+        )
+        c = db.cursor()
+        
+        box = info['box']
+        sql = f"INSERT INTO box ({', '.join(box.keys())}) VALUES ({', '.join(['%s'] * len(box.values()))})"
+        c.execute(sql, list(box.values()))
+        result['box_logid'] = c.lastrowid
+
+        for sensor in info['sensors']:
+            sensor['box_logid'] = result['box_logid']
+            sql = f"INSERT INTO sensors ({', '.join(sensor.keys())}) VALUES ({', '.join(['%s'] * len(sensor.values()))})"
+            c.execute(sql, list(sensor.values()))
+            result['sensor_logids'].append(c.lastrowid)
+
+        db.commit()
+        db.close()
     except Exception as err: 
         result = {'error': {}}
         status_code = requests.codes.internal_server_error
@@ -141,13 +163,44 @@ def get(log_output: bool = False) -> Tuple[dict, int]:
         result['error']['message'] = str(err)
     else:
         status_code = requests.codes.ok
-    finally:
-        session.close()
+ 
+    return result, status_code
+
+def chksensor(location, field, threshold):
+    info, status_code = getinfo()
+    if status_code != requests.codes.ok:
+        return info, status_code
+
+    try:
+        sensor = {}
+        for n in range(len(info['sensors'])):
+            if info['sensors'][n]['location'].casefold() == location.casefold():
+                sensor = info['sensors'][n]
+    
+        result = {
+            'field': field,
+            'value': sensor[field],
+            'threshold': threshold,
+            'ok': float(sensor[field]) <= float(threshold)
+        }
+    except Exception as err: 
+        result = {'error': {}}
+        status_code = requests.codes.bad_request
+        result['error']['code'] = status_code
+        result['error']['reason'] = err.__class__.__name__
+        result['error']['message'] = str(err)
+    else:
+        status_code = requests.codes.ok
  
     return result, status_code
 
 if __name__ == "__main__":
     # For debugging while developing
-    result, status_code = get(log_output=False)
+    info, status_code = getinfo()
     print(status_code)
-    print(json.dumps(result, indent=4, sort_keys=True, default=str))
+    print(json.dumps(info, indent=4, default=str))
+
+    stat, status_code = chksensor('Keuken', 'co2', 500)
+    print(status_code)
+    print(json.dumps(stat, indent=4, default=str))
+
