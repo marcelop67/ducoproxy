@@ -17,7 +17,7 @@ MYSQL_USER = CONFIG.str('MYSQL_USER')
 MYSQL_PASSWORD = CONFIG.str('MYSQL_PASSWORD')
 
 def getinfo():
-    info = {
+    data = {
         'timestamp': datetime.now(tz=timezone.utc),
         'box': {
             'logtime': None,
@@ -46,7 +46,7 @@ def getinfo():
     response = session.get(url, timeout=10)
     response.raise_for_status()
     board = response.json()
-    info['box']['uptime'] = board['uptime']
+    data['box']['uptime'] = board['uptime']
     
     url = f"{DUCO_ROOT_ENDPOINT}/nodelist')"
     response = session.get(url, timeout=10)
@@ -62,25 +62,25 @@ def getinfo():
         node = response.json()
 
         if node['devtype'] == 'BOX':
-            info['box']['mode'] = node['mode']
-            info['box']['state'] = node['state']
-            info['box']['level'] = node['trgt']
-            info['box']['cntdwn'] = node['cntdwn']
+            data['box']['mode'] = node['mode']
+            data['box']['state'] = node['state']
+            data['box']['level'] = node['trgt']
+            data['box']['cntdwn'] = node['cntdwn']
                 
             url = f"{DUCO_ROOT_ENDPOINT}/boxinfoget')"
             response = session.get(url, timeout=10)
             response.raise_for_status()     
             box = response.json()
 
-            info['box']['temp_oda'] = box['EnergyInfo']['TempODA']/10 # Outdoor air. Supply air from outdoors to the unit
-            info['box']['temp_sup'] = box['EnergyInfo']['TempSUP']/10 # Supply air. Supply air from unit to house
-            info['box']['temp_eta'] = box['EnergyInfo']['TempETA']/10 # Extract air. Supply air from the house to the unit
-            info['box']['temp_eha'] = box['EnergyInfo']['TempEHA']/10 # Exhaust air. Exhaust air from the unit to outdoors        
-            info['box']['remainfilter_days'] = box['EnergyInfo']['FilterRemainingTime']
-            info['box']['remainfilter_percent'] = round(box['EnergyInfo']['FilterRemainingTime']/(365/2)*100)
-            info['box']['bypass'] = box['EnergyInfo']['BypassStatus']
-            info['box']['frost'] = box['EnergyInfo']['FrostProtState']
-            info['box']['power'] = (box['EnergyFan']['SupplyFanPwmLevel'] + box['EnergyFan']['ExhaustFanPwmLevel'])/1000
+            data['box']['temp_oda'] = box['EnergyInfo']['TempODA']/10 # Outdoor air. Supply air from outdoors to the unit
+            data['box']['temp_sup'] = box['EnergyInfo']['TempSUP']/10 # Supply air. Supply air from unit to house
+            data['box']['temp_eta'] = box['EnergyInfo']['TempETA']/10 # Extract air. Supply air from the house to the unit
+            data['box']['temp_eha'] = box['EnergyInfo']['TempEHA']/10 # Exhaust air. Exhaust air from the unit to outdoors        
+            data['box']['remainfilter_days'] = box['EnergyInfo']['FilterRemainingTime']
+            data['box']['remainfilter_percent'] = round(box['EnergyInfo']['FilterRemainingTime']/(365/2)*100)
+            data['box']['bypass'] = box['EnergyInfo']['BypassStatus']
+            data['box']['frost'] = box['EnergyInfo']['FrostProtState']
+            data['box']['power'] = (box['EnergyFan']['SupplyFanPwmLevel'] + box['EnergyFan']['ExhaustFanPwmLevel'])/1000
         
         elif node['devtype'] == 'UCCO2' or node['devtype'] == 'UCRH' or (node['devtype'] == 'UC' and node['netw'] == 'VIRT'):
             sensor = {}
@@ -102,21 +102,21 @@ def getinfo():
                 sensor['devtype'] = 'PROGRM'
                 sensor['location'] = 'Program'
 
-            info['sensors'].append(sensor)
+            data['sensors'].append(sensor)
             if sensor['target'] > target:
                 location = sensor['location']
                 target = sensor['target']
 
-    info['box']['has_control'] = 'Manual' if info['box']['mode'] == 'MANU' else location
+    data['box']['has_control'] = 'Manual' if data['box']['mode'] == 'MANU' else location
 
     session.close()
 
-    return info
+    return data
 
 def writelog():
     info = getinfo()
  
-    result = {
+    data = {
         'timestamp': info['timestamp'],
         'box_logid': None,
         'sensor_logids': []
@@ -135,19 +135,19 @@ def writelog():
     box['logtime'] = info['timestamp']
     sql = f"INSERT INTO box ({', '.join(box.keys())}) VALUES ({', '.join(['%s'] * len(box.values()))})"
     c.execute(sql, list(box.values()))
-    result['box_logid'] = c.lastrowid
+    data['box_logid'] = c.lastrowid
 
     for sensor in info['sensors']:
         sensor['logtime'] = info['timestamp']
-        sensor['box_logid'] = result['box_logid']
+        sensor['box_logid'] = data['box_logid']
         sql = f"INSERT INTO sensors ({', '.join(sensor.keys())}) VALUES ({', '.join(['%s'] * len(sensor.values()))})"
         c.execute(sql, list(sensor.values()))
-        result['sensor_logids'].append(c.lastrowid)
+        data['sensor_logids'].append(c.lastrowid)
 
     db.commit()
     db.close()
 
-    return result
+    return data
 
 def chksensor(location, field, threshold):
     info = getinfo()
@@ -157,7 +157,7 @@ def chksensor(location, field, threshold):
         if info['sensors'][n]['location'].casefold() == location.casefold():
             sensor = info['sensors'][n]
 
-    result = {
+    data = {
         'timestamp': info['timestamp'],
         'field': field,
         'value': sensor[field],
@@ -165,7 +165,7 @@ def chksensor(location, field, threshold):
         'ok': float(sensor[field]) <= float(threshold)
     }
  
-    return result
+    return data
 
 if __name__ == "__main__":
     # For debugging while developing
