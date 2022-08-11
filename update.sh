@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-IMAGE=$(grep -oP "image: \K.+" docker-compose.yml)
+IMAGE=$(grep -oP "image: \K.+" docker-compose.yaml)
 docker pull $IMAGE
 docker-compose stop
 docker-compose rm --force
